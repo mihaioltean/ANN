@@ -141,5 +141,30 @@ void t_ann::train(double ** training_data, double **target, int num_data)
 	init_weights();
 
 	compute_error(training_data, target, num_data);
+
+	for (int epoch = 0; epoch < num_iterations; epoch++) {
+		// printf eroare
+
+		for (int data_index = 0; data_index < num_data; data_index++) {
+			// forward pass
+			// set input data
+			for (int input = 0; input < num_neurons[0]; input++)
+				out[0][input] = training_data[data_index][input];
+			// compute out for each other layer
+			for (int layer = 1; layer < num_layers; layer++) {
+				for (int n2 = 0; n2 < num_neurons[layer]; n2++) {
+					out[layer][n2] = 0;
+					for (int w = 0; w < num_neurons[layer - 1] + 1; w++)
+						out[layer][n2] += weights[layer - 1][n2][w] * out[layer - 1][w];
+					out[layer][n2] = logistic_function(out[layer][n2]);
+				}
+			}
+			// backward pass
+			// update weights between last layer and hidden layer
+			for (int n2 = 0; n2 < num_neurons[num_layers - 1]; n2++)
+				for (int n1 = 0; n1 < num_neurons[num_layers - 1] + 1; n1++)
+					weights[num_layers - 2][n2][n1] -= learning_rate * (out[num_layers - 1][n2] - target[data_index][n2]) * out[num_layers - 1][n2] * (1 - out[num_layers - 1][n2]) * out[num_layers - 2][n1];
+
+	}
 }
 //------------------------------------------------------
