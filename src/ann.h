@@ -11,8 +11,13 @@ private:
 
 	int num_iterations;
 
+	double ann_error;
+	double learning_rate;
+
 public:
 
+	t_ann();
+	~t_ann();
 	void set_num_layers(int num_layers);
 	void set_num_neurons(int layer_index, int num_neurons);
 	void set_num_iterations(int num_iterations);
@@ -23,6 +28,13 @@ public:
 	int get_num_iterations(void);
 
 	void train(double ** training_data, double **target, int num_data);
+
+	void allocate_memory(void);
+	void release_memory(void);
+	void init_weights(void);
+
+	double get_error(void);
+	void compute_error(double **training_data, double **target, int num_data);
 };
 
 #endif
