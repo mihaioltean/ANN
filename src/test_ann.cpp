@@ -1,8 +1,8 @@
-// ann.cpp : Defines the entry point for the console application.
-//
+#include <stdio.h>
+
 
 #include "ann.h"
-#include <stdio.h>
+
 
 t_ann ann;
 
@@ -57,14 +57,11 @@ void delete_data(double **&data, double **&target, int num_training_data)
 	}
 }
 //---------------------------------------------------------------------------
-void f(void)
+
+
+int _main()
 {
-	printf("epoch = %d error = %lf\n", ann.get_epoch(), ann.get_error());
-}
-//------------------------------------------------------------------------
-int main()
-{
-	double **training_data;
+	double **test_data;
 	double **target;
 	int num_data;
 
@@ -72,33 +69,37 @@ int main()
 	int num_outputs;
 
 	printf("reading data ... ");
-	if (!read_file("c:/Mihai/uab/ann/data/mnist_test.txt", training_data, target, num_data, num_variables, num_outputs)) {
+	if (!read_file("c:/Mihai/uab/ann/data/mnist_test.txt", test_data, target, num_data, num_variables, num_outputs)) {
 		printf("Cannot read file!\n");
 		getchar();
 		return 1;
 	}
-	
+
 	printf("done\n");
-		
-		ann.set_num_layers(3);
-		ann.set_num_neurons(0, num_variables);
-		ann.set_num_neurons(1, 4);
-		ann.set_num_neurons(2, num_outputs);
 
-		ann.set_learning_rate(0.01);
-		ann.set_num_iterations(100000);
+	if (!ann.from_file("ann.txt")) {
+		printf("Cannot read ANN!\n");
+		getchar();
+		return 2;
+	}
 
-		ann.train(training_data, target, num_data, f);
-		
-		double error = ann.get_error();
-	
-		
-	printf("Error = %lf\n", error);
+	int class_index;
 
-	delete_data(training_data, target, num_data);
+	double *out = new double[ann.get_num_neurons(ann.get_num_layers() - 1)];
+
+	for (int i = 0; i < num_data; i++) {
+		ann.test(test_data[i], out, class_index);
+		printf("%d\n", class_index);
+	}
+
+
+	delete[] out;
+	delete_data(test_data, target, num_data);
+
+	ann.release_memory();
 
 	getchar();
 
-    return 0;
+	return 0;
 }
 //------------------------------------------------------------------------
