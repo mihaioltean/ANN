@@ -53,6 +53,7 @@ void t_ann::release_memory(void)
 		for (int i = 0; i < num_layers; i++)
 			delete[] out[i];
 		delete[] out;
+		out = NULL;
 	}
 
 	// delete weights
@@ -63,6 +64,7 @@ void t_ann::release_memory(void)
 			delete[] weights[layer];
 		}
 		delete[] weights;
+		weights = NULL;
 	}
 
 	// deltas
@@ -70,6 +72,7 @@ void t_ann::release_memory(void)
 		for (int i = 0; i < num_layers - 1; i++)
 			delete[] deltas[i];
 		delete[] deltas;
+		deltas = NULL;
 	}
 
 	if (num_neurons) {
