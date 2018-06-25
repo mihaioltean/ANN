@@ -45,6 +45,9 @@ public:
 	void compute_error(double **training_data, double **target, int num_data);
 
 	int get_epoch(void);
+    
+    bool from_file(char* filename);
+    bool to_file(char* filename);
 };
 
 #endif

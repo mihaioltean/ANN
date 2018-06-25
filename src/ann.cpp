@@ -163,6 +163,27 @@ void t_ann::compute_error(double **training_data, double **target, int num_data)
 	}
 }
 //------------------------------------------------------
+bool t_ann::to_file(char* filename)
+{
+    FILE *f = fopen(filename, "w");
+    if (!f)
+        return false;
+    
+        fclose(f);
+    return true;
+
+}
+//------------------------------------------------------
+bool t_ann::from_file(char* filename)
+{
+    FILE *f = fopen(filename, "r");
+    if (!f)
+        return false;
+    
+        fclose(f);
+    return true;
+}
+//------------------------------------------------------
 void t_ann::train(double ** training_data, double **target, int num_data, t_func f)
 {
 	allocate_memory();
