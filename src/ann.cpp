@@ -26,7 +26,7 @@ t_ann::~t_ann()
 //------------------------------------------------------
 void t_ann::allocate_memory(void)
 {
-	// allocate weights
+	// allocate out
 	out = new double *[num_layers];
 	for (int i = 0; i < num_layers - 1; i++)
 		out[i] = new double[num_neurons[i] + 1];
@@ -49,17 +49,21 @@ void t_ann::allocate_memory(void)
 void t_ann::release_memory(void)
 {
 // delete out
-	for (int i = 0; i < num_layers; i++)
-		delete[] out[i];
-	delete[] out;
+	if (out) {
+		for (int i = 0; i < num_layers; i++)
+			delete[] out[i];
+		delete[] out;
+	}
 
 	// delete weights
-	for (int layer = 0; layer < num_layers - 1; layer++) {
-		for (int neuron = 0; neuron < num_neurons[layer + 1]; neuron++)
-			delete[] weights[layer][neuron];
-		delete[] weights[layer];
+	if (weights) {
+		for (int layer = 0; layer < num_layers - 1; layer++) {
+			for (int neuron = 0; neuron < num_neurons[layer + 1]; neuron++)
+				delete[] weights[layer][neuron];
+			delete[] weights[layer];
+		}
+		delete[] weights;
 	}
-	delete[] weights;
 
 	// deltas
 	if (deltas) {
@@ -163,24 +167,83 @@ void t_ann::compute_error(double **training_data, double **target, int num_data)
 	}
 }
 //------------------------------------------------------
-bool t_ann::to_file(char* filename)
+void t_ann::test(double * test_data, double *out_last_layer, int &class_index)
+{
+	// set input data
+	for (int input = 0; input < num_neurons[0]; input++)
+		out[0][input] = test_data[input];
+	// compute out for each other layer
+	for (int layer = 1; layer < num_layers; layer++) {
+		for (int n2 = 0; n2 < num_neurons[layer]; n2++) {
+			out[layer][n2] = 0;
+			for (int w = 0; w < num_neurons[layer - 1] + 1; w++)
+				out[layer][n2] += weights[layer - 1][n2][w] * out[layer - 1][w];
+			out[layer][n2] = logistic_function(out[layer][n2]);
+		}
+	}
+	int max_out_value = -1;
+	class_index = -1;
+	for (int neuron = 0; neuron < num_neurons[num_layers - 1]; neuron++) {
+		out_last_layer[neuron] = out[num_layers - 1][neuron];
+		if (max_out_value < out_last_layer[neuron]) {
+			class_index = neuron;
+			max_out_value = out_last_layer[neuron];
+		}
+	}
+}
+//------------------------------------------------------
+bool t_ann::to_file(const char* filename)
 {
     FILE *f = fopen(filename, "w");
     if (!f)
         return false;
     
-        fclose(f);
-    return true;
+	fprintf(f, "%d\n", num_layers);
 
+	for (int layer = 0; layer < num_layers; layer++)
+		fprintf(f, "%d ", num_neurons[layer]);
+	fprintf(f, "\n");
+
+	for (int layer = 1; layer < num_layers; layer++)
+		for (int n2 = 0; n2 < num_neurons[layer]; n2++)
+			for (int w = 0; w < num_neurons[layer - 1] + 1; w++)
+				fprintf(f, "%lf ", weights[layer - 1][n2][w]);
+
+    fclose(f);
+	return true;
 }
 //------------------------------------------------------
-bool t_ann::from_file(char* filename)
+bool t_ann::from_file(const char* filename)
 {
     FILE *f = fopen(filename, "r");
     if (!f)
         return false;
     
-        fclose(f);
+	release_memory();
+
+	fscanf(f, "%d", &num_layers);
+	if (num_layers <= 0)
+		return false;
+
+	num_neurons = new int[num_layers];
+	for (int layer = 0; layer < num_layers; layer++)
+		fscanf(f, "%d", &num_neurons[layer]);
+
+	// allocate memory
+	weights = new double**[num_layers - 1];
+	for (int layer = 0; layer < num_layers - 1; layer++) {
+		weights[layer] = new double*[num_neurons[layer + 1]];
+		for (int neuron = 0; neuron < num_neurons[layer + 1]; neuron++)
+			weights[layer][neuron] = new double[num_neurons[layer] + 1];
+	}
+
+	// read weights
+	for (int layer = 1; layer < num_layers; layer++)
+		for (int n2 = 0; n2 < num_neurons[layer]; n2++)
+			for (int w = 0; w < num_neurons[layer - 1] + 1; w++)
+				fscanf(f, "%lf", &weights[layer - 1][n2][w]);
+
+    fclose(f);
     return true;
 }
 //------------------------------------------------------

@@ -36,6 +36,7 @@ public:
 	int get_num_iterations(void);
 
 	void train(double ** training_data, double **target, int num_data, t_func);
+	void test(double * test_data, double *out_last_layer, int &class_index);
 
 	void allocate_memory(void);
 	void release_memory(void);
@@ -46,8 +47,8 @@ public:
 
 	int get_epoch(void);
     
-    bool from_file(char* filename);
-    bool to_file(char* filename);
+    bool from_file(const char* filename);
+    bool to_file(const char* filename);
 };
 
 #endif
