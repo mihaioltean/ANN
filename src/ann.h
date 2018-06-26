@@ -17,6 +17,8 @@ private:
 	int num_iterations;
 
 	double ann_error;
+	int num_incorrectly_classified;
+
 	double learning_rate;
 
 	int epoch;
@@ -43,7 +45,10 @@ public:
 	void init_weights(void);
 
 	double get_error(void);
+	int get_num_incorrectly_classified(void);
+
 	void compute_error(double **training_data, double **target, int num_data);
+	void compute_num_incorrectly_classified(double **training_data, double **target, int num_data);
 
 	int get_epoch(void);
     

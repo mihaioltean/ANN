@@ -138,6 +138,11 @@ double t_ann::get_error(void)
 	return ann_error;
 }
 //------------------------------------------------------
+int t_ann::get_num_incorrectly_classified(void)
+{
+	return num_incorrectly_classified;
+}
+//-------------------------------------------------------------------------
 double logistic_function(double x)
 {
 	return 1 / (1 + exp(-x));
@@ -170,6 +175,35 @@ void t_ann::compute_error(double **training_data, double **target, int num_data)
 	}
 }
 //------------------------------------------------------
+void t_ann::compute_num_incorrectly_classified(double **training_data, double **target, int num_data)
+{
+	num_incorrectly_classified = 0;
+
+	for (int data_index = 0; data_index < num_data; data_index++) {
+		// set data for the input layer
+		for (int input = 0; input < num_neurons[0]; input++)
+			out[0][input] = training_data[data_index][input];
+
+		// forward pass
+		for (int layer = 1; layer < num_layers; layer++) {
+			for (int n2 = 0; n2 < num_neurons[layer]; n2++) {
+				out[layer][n2] = 0;
+				for (int w1 = 0; w1 < num_neurons[layer - 1] + 1; w1++)
+					out[layer][n2] += weights[layer - 1][n2][w1] * out[layer - 1][w1];
+				out[layer][n2] = logistic_function(out[layer][n2]);
+			}
+		}
+
+		int num_incorrectly_classified_outputs = 0;
+		for (int w = 0; w < num_neurons[num_layers - 1]; w++)
+			if (fabs(target[data_index][w] - out[num_layers - 1][w]) >= 0.5)
+				num_incorrectly_classified_outputs++;
+
+		num_incorrectly_classified += (num_incorrectly_classified_outputs > 0);
+	}
+}
+//-------------------------------------------------------------------------
+
 void t_ann::test(double * test_data, double *out_last_layer, int &class_index)
 {
 	// set input data
@@ -268,6 +302,8 @@ void t_ann::train(double ** training_data, double **target, int num_data, t_func
 
 	for (epoch = 0; epoch < num_iterations; epoch++) {
 		compute_error(training_data, target, num_data);
+		compute_num_incorrectly_classified(training_data, target, num_data);
+
 		f();
 
 		for (int data_index = 0; data_index < num_data; data_index++) {
