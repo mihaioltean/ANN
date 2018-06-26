@@ -10,7 +10,8 @@ t_ann ann;
 //---------------------------------------------------------------------------
 void f(void)
 {
-	printf("epoch = %d error = %lf\n", ann.get_epoch(), ann.get_error());
+	//printf("epoch = %d error = %lf\n", ann.get_epoch(), ann.get_error());
+	printf("epoch = %d error = %lf num_incorrect_class = %d\n", ann.get_epoch(), ann.get_error(), ann.get_num_incorrectly_classified());
 }
 //------------------------------------------------------------------------
 int main()
@@ -37,7 +38,7 @@ int main()
 		ann.set_num_neurons(2, num_outputs);
 
 		ann.set_learning_rate(0.01);
-		ann.set_num_iterations(10);
+		ann.set_num_iterations(1000);
 
 		ann.train(training_data, target, num_data, f);
 		
