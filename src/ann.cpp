@@ -172,6 +172,13 @@ void t_ann::compute_error(double **training_data, double **target, int num_data)
 //------------------------------------------------------
 void t_ann::test(double * test_data, double *out_last_layer, int &class_index)
 {
+
+	// allocate out
+	out = new double *[num_layers];
+	for (int i = 0; i < num_layers - 1; i++)
+		out[i] = new double[num_neurons[i] + 1];
+	out[num_layers - 1] = new double[num_neurons[num_layers - 1]];
+
 	// set input data
 	for (int input = 0; input < num_neurons[0]; input++)
 		out[0][input] = test_data[input];
@@ -193,6 +200,15 @@ void t_ann::test(double * test_data, double *out_last_layer, int &class_index)
 			max_out_value = out_last_layer[neuron];
 		}
 	}
+
+	// release memory for out
+	if (out) {
+		for (int i = 0; i < num_layers; i++)
+			delete[] out[i];
+		delete[] out;
+		out = NULL;
+	}
+
 }
 //------------------------------------------------------
 bool t_ann::to_file(const char* filename)
