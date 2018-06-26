@@ -206,6 +206,10 @@ void t_ann::compute_num_incorrectly_classified(double **training_data, double **
 
 void t_ann::test(double * test_data, double *out_last_layer, int &class_index)
 {
+	// first set the value of bias nodes to 1
+	for (int layer = 0; layer < num_layers - 1; layer++)
+		out[layer][num_neurons[layer]] = 1;
+
 	// set input data
 	for (int input = 0; input < num_neurons[0]; input++)
 		out[0][input] = test_data[input];
@@ -218,7 +222,7 @@ void t_ann::test(double * test_data, double *out_last_layer, int &class_index)
 			out[layer][n2] = logistic_function(out[layer][n2]);
 		}
 	}
-	int max_out_value = -1;
+	double max_out_value = -1;
 	class_index = -1;
 	for (int neuron = 0; neuron < num_neurons[num_layers - 1]; neuron++) {
 		out_last_layer[neuron] = out[num_layers - 1][neuron];
