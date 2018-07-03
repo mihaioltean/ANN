@@ -206,6 +206,10 @@ void t_ann::compute_num_incorrectly_classified(double **training_data, double **
 
 void t_ann::test(double * test_data, double *out_last_layer, int &class_index)
 {
+	// test_data  input
+	// out_last_layer output
+	// class_index output
+
 	// first set the value of bias nodes to 1
 	for (int layer = 0; layer < num_layers - 1; layer++)
 		out[layer][num_neurons[layer]] = 1;
@@ -251,6 +255,41 @@ bool t_ann::to_file(const char* filename)
 				fprintf(f, "%lf ", weights[layer - 1][n2][w]);
 
     fclose(f);
+	return true;
+}
+//------------------------------------------------------
+bool t_ann::to_js(const char* filename)
+{
+	FILE *f = fopen(filename, "w");
+	if (!f)
+		return false;
+
+	fprintf(f, "var num_layers = %d;\n", num_layers);
+
+	fprintf(f, "var num_neurons = [");
+	for (int layer = 0; layer < num_layers - 1; layer++)
+		fprintf(f, "%d, ", num_neurons[layer]);
+	fprintf(f, "%d];\n", num_neurons[num_layers - 1]);
+
+	fprintf(f, "var weights = ");
+	fprintf(f, "[");
+	for (int layer = 1; layer < num_layers; layer++) {
+		fprintf(f, "[");
+		for (int n2 = 0; n2 < num_neurons[layer]; n2++) {
+			fprintf(f, "[");
+			for (int w = 0; w < num_neurons[layer - 1] + 1; w++)
+				fprintf(f, "%lf ", weights[layer - 1][n2][w]);
+			fprintf(f, "]");
+			if (n2 < num_neurons[layer] - 1) // add comma is not last neuron
+				fprintf(f, ", ");
+		}
+		fprintf(f, "]");
+		if (layer < num_layers - 1)
+			fprintf(f, ", "); // add comma if not last layer
+	}
+	fprintf(f, "];");
+
+	fclose(f);
 	return true;
 }
 //------------------------------------------------------

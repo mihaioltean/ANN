@@ -46,7 +46,7 @@ public:
 
 	double get_error(void);
 	int get_num_incorrectly_classified(void);
-
+	
 	void compute_error(double **training_data, double **target, int num_data);
 	void compute_num_incorrectly_classified(double **training_data, double **target, int num_data);
 
@@ -54,6 +54,7 @@ public:
     
     bool from_file(const char* filename);
     bool to_file(const char* filename);
+	bool to_js(const char* filename);
 };
 
 #endif

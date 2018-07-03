@@ -34,22 +34,25 @@ int main()
 		
 		ann.set_num_layers(3);
 		ann.set_num_neurons(0, num_variables);
-		ann.set_num_neurons(1, 4);
+		ann.set_num_neurons(1, 100);
 		ann.set_num_neurons(2, num_outputs);
 
 		ann.set_learning_rate(0.01);
-		ann.set_num_iterations(1000);
+		ann.set_num_iterations(100);
 
 		ann.train(training_data, target, num_data, f);
 		
 		double error = ann.get_error();
 		ann.to_file("ann.txt");
+		ann.to_js("ann.js");
 		
 	printf("Error = %lf\n", error);
 
 	delete_data(training_data, target, num_data);
 
 	ann.release_memory();
+
+	printf("Press Enter to terminate...\n");
 
 	getchar();
 
