@@ -209,7 +209,6 @@ void t_ann::test(double * test_data, double *out_last_layer, int &class_index)
 	// test_data  input
 	// out_last_layer output
 	// class_index output
-
 	// first set the value of bias nodes to 1
 	for (int layer = 0; layer < num_layers - 1; layer++)
 		out[layer][num_neurons[layer]] = 1;
@@ -277,8 +276,11 @@ bool t_ann::to_js(const char* filename)
 		fprintf(f, "[");
 		for (int n2 = 0; n2 < num_neurons[layer]; n2++) {
 			fprintf(f, "[");
-			for (int w = 0; w < num_neurons[layer - 1] + 1; w++)
-				fprintf(f, "%lf ", weights[layer - 1][n2][w]);
+			for (int w = 0; w < num_neurons[layer - 1] + 1; w++) {
+				fprintf(f, "%lf", weights[layer - 1][n2][w]);
+				if (w < num_neurons[layer - 1])
+					fprintf(f, ", ");
+			}
 			fprintf(f, "]");
 			if (n2 < num_neurons[layer] - 1) // add comma is not last neuron
 				fprintf(f, ", ");
