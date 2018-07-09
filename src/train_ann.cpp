@@ -12,6 +12,9 @@ void f(void)
 {
 	//printf("epoch = %d error = %lf\n", ann.get_epoch(), ann.get_error());
 	printf("epoch = %d error = %lf num_incorrect_class = %d\n", ann.get_epoch(), ann.get_error(), ann.get_num_incorrectly_classified());
+	char filename[100];
+	sprintf(filename, "ann_%d.js", ann.get_epoch());
+	ann.to_js(filename);
 }
 //------------------------------------------------------------------------
 int main()
@@ -24,7 +27,7 @@ int main()
 	int num_outputs;
 
 	printf("reading data ... ");
-	if (!read_file("c:/Mihai/uab/ann/data/mnist_test.txt", training_data, target, num_data, num_variables, num_outputs)) {
+	if (!read_file("c:/Mihai/uab/ann/data/mnist_train.txt", training_data, target, num_data, num_variables, num_outputs)) {
 		printf("Cannot read file!\n");
 		getchar();
 		return 1;
