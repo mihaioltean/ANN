@@ -1,1 +1,1 @@
-# ann
+# Artificial Neural Network for MNIST
